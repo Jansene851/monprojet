@@ -1,191 +1,295 @@
-import { JSX, ReactNode } from 'react';
-import { cn } from '@/lib/utils';
+'use client';
 
-interface CardProps {
+import { ChevronRight } from 'lucide-react';
+import { ReactNode } from 'react';
+
+export type CardVariant = 'default' | 'elevated' | 'outlined' | 'ghost' | 'gradient';
+export type CardPadding = 'none' | 'sm' | 'md' | 'lg' | 'xl';
+export type CardRadius = 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
+export type CardShadow = 'none' | 'sm' | 'md' | 'lg' | 'xl';
+
+export interface CardProps {
   children: ReactNode;
+  variant?: CardVariant;
+  padding?: CardPadding;
+  radius?: CardRadius;
+  hover?: boolean;
+  clickable?: boolean;
+  fullWidth?: boolean;
   className?: string;
-  hoverEffect?: boolean;
-  gradient?: boolean;
-  glass?: boolean;
-  padding?: 'none' | 'sm' | 'md' | 'lg';
+  onClick?: () => void;
+  header?: ReactNode;
+  footer?: ReactNode;
+  divider?: boolean;
+  accent?: 'top' | 'right' | 'bottom' | 'left' | 'none';
+  accentColor?: string;
+  shadow?: CardShadow;
+  title?: string;
+  
 }
 
-export function Card({
+const Card = ({
   children,
-  className,
-  hoverEffect = true,
-  gradient = false,
-  glass = false,
+  variant = 'default',
   padding = 'md',
-}: CardProps) {
-  const paddingClasses = {
+  radius = 'lg',
+  hover = false,
+  clickable = false,
+  fullWidth = false,
+  className = '',
+  onClick,
+  header,
+  footer,
+  divider = false,
+  accent = 'none',
+  accentColor = 'from-orange-500 to-red-600',
+  shadow = 'md',
+}: CardProps) => {
+  // Variantes
+  const variantClasses: Record<CardVariant, string> = {
+    default: 'bg-white',
+    elevated: 'bg-white border border-gray-200',
+    outlined: 'bg-transparent border-2 border-gray-200',
+    ghost: 'bg-transparent',
+    gradient: 'bg-linear-to-br from-orange-50 via-white to-red-50'
+  };
+
+  // Padding
+  const paddingClasses: Record<CardPadding, string> = {
     none: '',
     sm: 'p-4',
     md: 'p-6',
     lg: 'p-8',
+    xl: 'p-12'
+  };
+
+  // Radius
+  const radiusClasses: Record<CardRadius, string> = {
+    none: 'rounded-none',
+    sm: 'rounded',
+    md: 'rounded-lg',
+    lg: 'rounded-xl',
+    xl: 'rounded-2xl',
+    full: 'rounded-full'
+  };
+
+  // Shadow
+  const shadowClasses: Record<CardShadow, string> = {
+    none: '',
+    sm: 'shadow-sm',
+    md: 'shadow-md',
+    lg: 'shadow-lg',
+    xl: 'shadow-xl'
+  };
+
+  // Accent border
+  const accentClasses: Record<Exclude<CardProps['accent'], 'none' | undefined>, string> = {
+    top: `border-t-4 bg-gradient-to-r ${accentColor}`,
+    right: `border-r-4 bg-gradient-to-b ${accentColor}`,
+    bottom: `border-b-4 bg-gradient-to-r ${accentColor}`,
+    left: `border-l-4 bg-gradient-to-b ${accentColor}`
+  };
+
+  // Classes conditionnelles
+  const hoverClass = hover ? 'transition-all duration-300 hover:shadow-xl hover:-translate-y-1' : '';
+  const clickableClass = clickable ? 'cursor-pointer active:scale-[0.98]' : '';
+  const widthClass = fullWidth ? 'w-full' : '';
+  const accentClass = accent !== 'none' ? accentClasses[accent] : '';
+
+  // Classes combinées
+  const combinedClasses = `
+    ${variantClasses[variant]}
+    ${paddingClasses[padding]}
+    ${radiusClasses[radius]}
+    ${shadowClasses[shadow]}
+    ${hoverClass}
+    ${clickableClass}
+    ${widthClass}
+    ${accentClass}
+    ${className}
+  `.replace(/\s+/g, ' ').trim();
+
+  const renderContent = () => (
+    <>
+      {header && (
+        <div className="mb-6">
+          {header}
+          {divider && <hr className="my-4 border-gray-200" />}
+        </div>
+      )}
+
+      <div>{children}</div>
+
+      {footer && (
+        <div className="mt-6">
+          {divider && <hr className="my-4 border-gray-200" />}
+          {footer}
+        </div>
+      )}
+    </>
+  );
+
+  if (onClick || clickable) {
+    return (
+      <button
+        onClick={onClick}
+        className={`${combinedClasses} focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2`}
+        type="button"
+      >
+        {renderContent()}
+      </button>
+    );
+  }
+
+  return (
+    <div className={combinedClasses}>
+      {renderContent()}
+    </div>
+  );
+};
+
+// Composants de card spécialisés
+Card.Header = ({
+  children,
+  icon,
+  title,
+  subtitle,
+  action
+}: {
+  children?: ReactNode;
+  icon?: ReactNode;
+  title?: string;
+  subtitle?: string;
+  action?: ReactNode;
+}) => (
+  <div className="flex items-center justify-between mb-6">
+    <div className="flex items-center">
+      {icon && <div className="mr-3">{icon}</div>}
+      <div>
+        {title && <h3 className="text-lg font-semibold text-gray-900">{title}</h3>}
+        {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
+      </div>
+    </div>
+    {action && <div>{action}</div>}
+  </div>
+);
+
+Card.Feature = ({
+  icon,
+  title,
+  description,
+  gradient = 'from-orange-100 to-red-100',
+  iconColor = 'text-orange-600',
+  href,
+  onClick,
+}: {
+  icon: ReactNode;
+  title: string;
+  description: string;
+  gradient?: string;
+  iconColor?: string;
+  href?: string;
+  onClick?: () => void;
+}) => (
+  <Card
+    variant="elevated"
+    hover
+    clickable={!!href || !!onClick}
+    onClick={onClick}
+    className="group"
+  >
+    <div className={`w-12 h-12 bg-linear-to-r ${gradient} rounded-xl flex items-center justify-center mb-4 ${iconColor}`}>
+      {icon}
+    </div>
+    <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
+    <p className="text-gray-600 text-sm mb-4">{description}</p>
+    {(href || onClick) && (
+      <span className="inline-flex items-center text-sm font-medium text-orange-600 group-hover:text-orange-700">
+        En savoir plus
+        <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+      </span>
+    )}
+  </Card>
+);
+
+Card.Stats = ({
+  icon,
+  value,
+  label,
+  trend,
+  color = 'orange',
+}: {
+  icon: ReactNode;
+  value: string;
+  label: string;
+  trend?: { value: string; positive: boolean };
+  color?: 'orange' | 'blue' | 'green' | 'purple' | 'red';
+}) => {
+  const colorClasses = {
+    orange: 'bg-orange-100 text-orange-600',
+    blue: 'bg-blue-100 text-blue-600',
+    green: 'bg-green-100 text-green-600',
+    purple: 'bg-purple-100 text-purple-600',
+    red: 'bg-red-100 text-red-600',
+  };
+
+  const trendClasses = {
+    positive: 'bg-green-100 text-green-800',
+    negative: 'bg-red-100 text-red-800',
   };
 
   return (
-    <div
-      className={cn(
-        'rounded-2xl border transition-all duration-300',
-        gradient && 'card-gradient border-gradient',
-        glass && 'glass backdrop-blur-md',
-        hoverEffect && 'card-hover hover-lift',
-        paddingClasses[padding],
-        className
-      )}
-    >
-      {children}
-    </div>
+    <Card variant="ghost" padding="sm">
+      <div className="flex items-center">
+        <div className="mr-4">
+          <div className={`w-12 h-12 ${colorClasses[color]} rounded-xl flex items-center justify-center`}>
+            {icon}
+          </div>
+        </div>
+        <div>
+          <p className="text-2xl font-bold text-gray-900">{value}</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-gray-600">{label}</p>
+            {trend && (
+              <span className={`text-xs px-2 py-0.5 rounded-full ${trendClasses[trend.positive ? 'positive' : 'negative']}`}>
+                {trend.positive ? '↗' : '↘'} {trend.value}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </Card>
   );
-}
+};
 
-interface CardHeaderProps {
-  children: ReactNode;
-  className?: string;
-}
-
-export function CardHeader({ children, className }: CardHeaderProps) {
-  return (
-    <div className={cn('mb-6', className)}>
-      {children}
-    </div>
-  );
-}
-
-interface CardTitleProps {
-  children: ReactNode;
-  className?: string;
-  /**
-   * Niveau de titre (h1 à h6)
-   */
-  level?: 1 | 2 | 3 | 4 | 5 | 6;
-  /**
-   * Utiliser une police de type display (plus grande et décorative)
-   */
-  display?: boolean;
-  /**
-   * Afficher un gradient sur le texte
-   */
-  gradient?: boolean;
-}
-
-export function CardTitle({
+Card.Highlight = ({
+  title,
   children,
+  action,
+  accent = 'top',
+  accentColor,
   className,
-  level = 2,
-  display = false,
-  gradient = false,
-}: CardTitleProps) {
-  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
-  
-  return (
-    <Tag
-      className={cn(
-        'font-bold text-gray-900 dark:text-white',
-        // Tailles basées sur le niveau
-        level === 1 && 'text-3xl md:text-4xl',
-        level === 2 && 'text-2xl md:text-3xl',
-        level === 3 && 'text-xl md:text-2xl',
-        level === 4 && 'text-lg md:text-xl',
-        level === 5 && 'text-base md:text-lg',
-        level === 6 && 'text-sm md:text-base',
-        // Variante display
-        display && 'font-display tracking-tight',
-        // Effet gradient
-        gradient && 'gradient-text text-effect-gradient',
-        className
-      )}
-    >
-      {children}
-    </Tag>
-  );
-}
-
-interface CardDescriptionProps {
+}: {
+  title: string;
   children: ReactNode;
+  action?: ReactNode;
+  accent?: CardProps['accent'];
+  accentColor?: string;
   className?: string;
-  /**
-   * Variante de texte (sm, md, lg)
-   */
-  size?: 'sm' | 'md' | 'lg';
-}
+}) => (
+  <Card
+    variant="elevated"
+    accent={accent}
+    accentColor={accentColor}
+    padding="lg"
+    className={`relative overflow-hidden ${className || ''}`}
+  >
+    <Card.Header
+      title={title}
+      action={action}
+    />
+    {children}
+  </Card>
+);
 
-export function CardDescription({
-  children,
-  className,
-  size = 'md',
-}: CardDescriptionProps) {
-  return (
-    <p
-      className={cn(
-        'text-gray-600 dark:text-gray-300',
-        size === 'sm' && 'text-sm',
-        size === 'md' && 'text-base',
-        size === 'lg' && 'text-lg',
-        className
-      )}
-    >
-      {children}
-    </p>
-  );
-}
-
-interface CardContentProps {
-  children: ReactNode;
-  className?: string;
-}
-
-export function CardContent({ children, className }: CardContentProps) {
-  return (
-    <div className={cn('space-y-4', className)}>
-      {children}
-    </div>
-  );
-}
-
-interface CardFooterProps {
-  children: ReactNode;
-  className?: string;
-  /**
-   * Alignement des éléments dans le footer
-   */
-  align?: 'left' | 'center' | 'right' | 'between';
-}
-
-export function CardFooter({
-  children,
-  className,
-  align = 'left',
-}: CardFooterProps) {
-  const alignClasses = {
-    left: 'flex justify-start',
-    center: 'flex justify-center',
-    right: 'flex justify-end',
-    between: 'flex justify-between',
-  };
-
-  return (
-    <div className={cn(
-      'mt-6 pt-6 border-t border-gray-100 dark:border-gray-800',
-      alignClasses[align],
-      className
-    )}>
-      {children}
-    </div>
-  );
-}
-
-interface CardActionProps {
-  children: ReactNode;
-  className?: string;
-}
-
-export function CardAction({ children, className }: CardActionProps) {
-  return (
-    <div className={cn('flex items-center gap-2', className)}>
-      {children}
-    </div>
-  );
-}
+export { Card };

@@ -1,0 +1,163 @@
+'use client';
+
+import { 
+  BarChart3, 
+  Award, 
+  Target, 
+  BookOpen, 
+  Calendar, 
+  TrendingUp, 
+  Users, 
+  Settings,
+  HelpCircle,
+  LogOut,
+  ChevronDown,
+  Star,
+  Trophy
+} from 'lucide-react';
+import { Button } from '@/app/components/ui/Button';
+import { User } from '@/app/models/user';
+
+interface SidebarProps {
+  activeTab: string;
+  user: User | null;
+  onTabChange: (tab: string) => void;
+  collapsed?: boolean;
+  onToggle?: () => void;
+}
+
+export default function Sidebar({ 
+  activeTab, 
+  onTabChange,
+  collapsed = false,
+  onToggle 
+}: SidebarProps) {
+  const menuItems = [
+    { id: 'overview', label: 'Vue d\'ensemble', icon: BarChart3 },
+    { id: 'concours', label: 'Mes concours', icon: Award, badge: 12 },
+    { id: 'quiz', label: 'Mes quiz', icon: Target, badge: 24 },
+    { id: 'resources', label: 'Ressources', icon: BookOpen },
+    { id: 'calendar', label: 'Calendrier', icon: Calendar },
+    { id: 'stats', label: 'Statistiques', icon: TrendingUp },
+    { id: 'community', label: 'Communauté', icon: Users },
+    { id: 'settings', label: 'Paramètres', icon: Settings }
+  ];
+
+  return (
+    <aside className={`fixed left-0 z-40 h-[calc(100vh-4rem)] bg-white border-r border-gray-200 transition-all duration-300 ${
+    collapsed ? 'w-20' : 'w-64'
+  } ${collapsed ? 'lg:w-20' : 'lg:w-64'}`}>
+<div className="h-full px-4 py-6 overflow-y-auto overflow-x-hidden dashboard-scrollbar">
+
+        
+        {/* Navigation */}
+        <nav className="space-y-1 mb-8">
+          {menuItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onTabChange(item.id)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all group ${
+                activeTab === item.id
+                  ? 'bg-linear-to-r from-orange-50 to-red-50 text-orange-600 border border-orange-200'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              title={collapsed ? item.label : undefined}
+            >
+              <item.icon className="h-5 w-5 shrink-0" />
+              
+              {!collapsed && (
+                <div className="flex-1 flex items-center justify-between">
+                  <span className="font-medium truncate">{item.label}</span>
+                  {item.badge && (
+                    <span className="px-2 py-0.5 text-xs bg-orange-500 text-white rounded-full">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+              )}
+            </button>
+          ))}
+        </nav>
+        
+        {/* Progression */}
+        {!collapsed && (
+          <div className="mb-8 p-3 bg-linear-to-br from-orange-50 to-red-50 rounded-xl border border-orange-200">
+            <div className="flex items-center gap-2 mb-3">
+              <Trophy className="h-5 w-5 text-orange-600" />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-900">Niveau 3</div>
+                <div className="text-xs text-gray-600">450/600 points</div>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Progression</span>
+                <span className="font-medium">75%</span>
+              </div>
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-full bg-linear-to-r from-orange-500 to-red-500 rounded-full" style={{ width: '75%' }} />
+              </div>
+            </div>
+            
+            <Button
+              variant="primary"
+              gradient
+              fullWidth
+              size="sm"
+              className="mt-3"
+            >
+              Voir les récompenses
+            </Button>
+          </div>
+        )}
+        
+        {/* Menu utilisateur */}
+        <div className="border-t border-gray-200 pt-6">
+          <div className={`px-2 ${collapsed ? 'flex justify-center' : ''}`}>
+            <button className={`flex items-center gap-3 p-2 rounded-lg hover:bg-gray-100 w-full ${
+              collapsed ? 'justify-center' : ''
+            }`}>
+              <div className="w-8 h-8 bg-linear-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                KT
+              </div>
+              
+              {!collapsed && (
+                <div className="flex-1 text-left overflow-hidden">
+                  <div className="text-sm font-medium text-gray-900 truncate">Koffi Traoré</div>
+                  <div className="text-xs text-gray-500 truncate">Étudiant</div>
+                </div>
+              )}
+              
+              {!collapsed && <ChevronDown className="h-4 w-4 text-gray-400" />}
+            </button>
+          </div>
+          
+          {!collapsed && (
+            <div className="mt-3 space-y-1 px-2">
+              <button className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 w-full">
+                <HelpCircle className="h-4 w-4" />
+                <span className="text-sm">Aide & Support</span>
+              </button>
+              
+              <button className="flex items-center gap-3 px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 w-full">
+                <LogOut className="h-4 w-4" />
+                <span className="text-sm">Déconnexion</span>
+              </button>
+            </div>
+          )}
+        </div>
+        
+        {/* Bouton de réduction */}
+        <button
+          onClick={onToggle}
+          className="absolute -right-3 top-1/2 w-6 h-6 bg-white border border-gray-300 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-shadow"
+        >
+          <ChevronDown className={`h-4 w-4 text-gray-600 transition-transform ${
+            collapsed ? 'rotate-90' : '-rotate-90'
+          }`} />
+        </button>
+      </div>
+    </aside>
+  );
+}
