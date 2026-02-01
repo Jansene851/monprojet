@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronRight, LucideIcon } from 'lucide-react';
+
 import Link from 'next/link';
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 
@@ -27,7 +28,7 @@ export interface ButtonProps {
     disabled?: boolean;
     href?: string;
     ariaLabel?: string;
-    onClick?: () => void;
+    onClick?: (event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => void;
     className?: string;
     type?: 'button' | 'submit' | 'reset';
     gradient?: boolean;
@@ -36,6 +37,7 @@ export interface ButtonProps {
     badge?: string | number;
     target?: string;
     rel?: string;
+    iconColor?: string;
 }
 
 const Button = ({
@@ -59,6 +61,7 @@ const Button = ({
     badge,
     target,
     rel,
+    iconColor
     }: ButtonProps) => {
     // Classes de base
     const baseClasses = 'inline-flex items-center justify-center font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';

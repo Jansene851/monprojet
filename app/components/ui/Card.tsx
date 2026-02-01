@@ -51,7 +51,7 @@ const Card = ({
     elevated: 'bg-white border border-gray-200',
     outlined: 'bg-transparent border-2 border-gray-200',
     ghost: 'bg-transparent',
-    gradient: 'bg-linear-to-br from-orange-50 via-white to-red-50'
+    gradient: 'bg-linear-to-r from-gray-900 to-gray-800'
   };
 
   // Padding

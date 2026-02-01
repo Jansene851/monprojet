@@ -1,6 +1,9 @@
+// app/components/HeroSection.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Card } from '@/app/components/ui/Card';
+import { Button } from '@/app/components/ui/Button';
 import { 
   ChevronRight, 
   Award, 
@@ -10,18 +13,65 @@ import {
   ArrowRight,
   Sparkles,
   Target,
-  CheckCircle
-} from 'lucide-react';
-import Link from 'next/link';
+  CheckCircle} from 'lucide-react';
+import { concoursData, getAllConcours } from '@/lib/data';
+
+// Composant pour les statistiques
+const StatCard = ({ value, label, icon: Icon, color }: {
+  value: string;
+  label: string;
+  icon: React.ElementType;
+  color: string;
+}) => (
+  <div className="flex items-center">
+    <div className="mr-3">
+      <div className={`w-10 h-10 ${color} rounded-lg flex items-center justify-center`}>
+        <Icon className="h-5 w-5" />
+      </div>
+    </div>
+    <div>
+      <p className="text-2xl font-bold text-gray-900">{value}</p>
+      <p className="text-sm text-gray-600">{label}</p>
+    </div>
+  </div>
+);
+
+// Composant pour les fonctionnalités
+const FeatureCard = ({ icon, title, description }: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}) => (
+  <Card
+    variant="elevated"
+    hover
+    padding="lg"
+    className="border border-gray-200 group"
+  >
+    <div className="w-12 h-12 bg-linear-to-r from-orange-100 to-red-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+      <div className="text-orange-600">
+        {icon}
+      </div>
+    </div>
+    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+      {title}
+    </h3>
+    <p className="text-gray-600 text-sm">
+      {description}
+    </p>
+    <div className="mt-4 pt-4 border-t border-gray-100">
+      <span className="inline-flex items-center text-sm text-orange-600 font-medium">
+        En savoir plus
+        <ChevronRight className="ml-1 h-4 w-4" />
+      </span>
+    </div>
+  </Card>
+);
 
 export default function HeroSection() {
   const [currentConcoursIndex, setCurrentConcoursIndex] = useState(0);
   
-  const featuredConcours = [
-    { id: 1, title: 'Concours ENA 2024', deadline: '15 Mai 2024', candidates: 2500 },
-    { id: 2, title: 'Concours Police Nationale', deadline: '30 Juin 2024', candidates: 1800 },
-    { id: 3, title: 'Concours INFAS', deadline: '20 Juillet 2024', candidates: 1200 },
-  ];
+ const concoursData = getAllConcours();
 
   const features = [
     {
@@ -49,10 +99,10 @@ export default function HeroSection() {
   // Animation pour changer le concours en vedette
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentConcoursIndex((prev) => (prev + 1) % featuredConcours.length);
+      setCurrentConcoursIndex((prev) => (prev + 1) % concoursData.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, [featuredConcours.length]);
+  }, [concoursData.length]);
 
   return (
     <section className="relative overflow-hidden bg-linear-to-br from-orange-50 via-white to-red-50">
@@ -65,12 +115,17 @@ export default function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Contenu principal */}
           <div className="space-y-8">
-            <div className="inline-flex items-center px-4 py-2 bg-linear-to-r from-orange-100 to-red-100 rounded-full border border-orange-200">
-              <Sparkles className="h-4 w-4 text-orange-600 mr-2" />
-              <span className="text-sm font-medium text-orange-700">
-                Plateforme officielle des concours en Côte d'Ivoire
-              </span>
-            </div>
+            <Card
+              variant="ghost"
+              className="inline-block border border-orange-200"
+            >
+              <div className="flex items-center px-4 py-2">
+                <Sparkles className="h-4 w-4 text-orange-600 mr-2" />
+                <span className="text-sm font-medium text-orange-700">
+                  Plateforme officielle des concours en Côte d'Ivoire
+                </span>
+              </div>
+            </Card>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
               Votre succès commence{' '}
@@ -90,129 +145,134 @@ export default function HeroSection() {
             
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link
+              <Button
                 href="/concours"
-                className="group relative inline-flex items-center justify-center px-8 py-4 bg-linear-to-r from-orange-500 to-red-600 text-white font-semibold rounded-xl hover:shadow-2xl hover:shadow-orange-200 transition-all duration-300 transform hover:-translate-y-1"
+                variant="primary"
+                size="lg"
+                gradient
+                icon={ArrowRight}
+                iconPosition="right"
+                className="group transform hover:-translate-y-1"
               >
-                <span>Explorer les concours</span>
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                <div className="absolute inset-0 rounded-xl border-2 border-white/20 group-hover:border-white/40 transition-colors"></div>
-              </Link>
+                Explorer les concours
+              </Button>
               
-              <Link
+              <Button
                 href="/quiz"
-                className="group inline-flex items-center justify-center px-8 py-4 bg-white border-2 border-orange-500 text-orange-600 font-semibold rounded-xl hover:bg-orange-50 transition-all duration-300"
+                variant="outline"
+                size="lg"
+                className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                icon={Target}
               >
-                <Target className="mr-2 h-5 w-5" />
-                <span>Commencer un quiz</span>
-              </Link>
+                Commencer un quiz
+              </Button>
             </div>
             
             {/* Stats rapides */}
             <div className="flex flex-wrap gap-6 pt-6">
-              <div className="flex items-center">
-                <div className="mr-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">150+</p>
-                  <p className="text-sm text-gray-600">Concours actifs</p>
-                </div>
-              </div>
+              <StatCard
+                value="150+"
+                label="Concours actifs"
+                icon={CheckCircle}
+                color="bg-green-100 text-green-600"
+              />
               
-              <div className="flex items-center">
-                <div className="mr-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Users className="h-5 w-5 text-blue-600" />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">50K+</p>
-                  <p className="text-sm text-gray-600">Candidats</p>
-                </div>
-              </div>
+              <StatCard
+                value="50K+"
+                label="Candidats"
+                icon={Users}
+                color="bg-blue-100 text-blue-600"
+              />
             </div>
           </div>
           
           {/* Côté droit avec carte de concours en vedette */}
           <div className="relative">
             {/* Carte principale */}
-            <div className="relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200 transform hover:scale-[1.02] transition-transform duration-300">
-              <div className="absolute top-0 left-0 w-full h-2 bg-linear-to-r from-orange-500 to-red-600"></div>
+            <Card
+              variant="elevated"
+              padding="lg"
+              hover
+              className="relative overflow-hidden border border-gray-200"
+              accent="top"
+              accentColor="bg-white"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-linear-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+                    <Award className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <span className="text-sm font-medium text-orange-600">En vedette</span>
+                    <h3 className="text-xl font-bold text-gray-900">Concours du moment</h3>
+                  </div>
+                </div>
+                <div className="flex space-x-1">
+                  {concoursData.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentConcoursIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        index === currentConcoursIndex 
+                          ? 'bg-orange-500 w-6' 
+                          : 'bg-gray-300 hover:bg-gray-400'
+                      }`}
+                      aria-label={`Voir concours ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
               
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
+              {/* Contenu de la carte */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-lg font-bold text-gray-900">
+                    {concoursData[currentConcoursIndex].title}
+                  </h4>
+                  <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                    Inscriptions ouvertes
+                  </span>
+                </div>
+                
+                <div className="space-y-3">
                   <div className="flex items-center">
-                    <div className="w-12 h-12 bg-linear-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
-                      <Award className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="ml-4">
-                      <span className="text-sm font-medium text-orange-600">En vedette</span>
-                      <h3 className="text-xl font-bold text-gray-900">Concours du moment</h3>
+                    <Calendar className="h-5 w-5 text-gray-400 mr-3" />
+                    <div>
+                      <p className="text-sm text-gray-500">Date limite</p>
+                      <p className="font-medium">{concoursData[currentConcoursIndex].stats.places}</p>
                     </div>
                   </div>
-                  <div className="flex space-x-1">
-                    {featuredConcours.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentConcoursIndex(index)}
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          index === currentConcoursIndex 
-                            ? 'bg-orange-500 w-6' 
-                            : 'bg-gray-300 hover:bg-gray-400'
-                        }`}
-                        aria-label={`Voir concours ${index + 1}`}
-                      />
-                    ))}
+                  
+                  <div className="flex items-center">
+                    <Users className="h-5 w-5 text-gray-400 mr-3" />
+                    <div>
+                      <p className="text-sm text-gray-500">Candidats inscrits</p>
+                      <p className="font-medium">{concoursData[currentConcoursIndex].status}+</p>
+                    </div>
                   </div>
                 </div>
                 
-                {/* Contenu de la carte */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-lg font-bold text-gray-900">
-                      {featuredConcours[currentConcoursIndex].title}
-                    </h4>
-                    <span className="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-                      Inscriptions ouvertes
-                    </span>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-center">
-                      <Calendar className="h-5 w-5 text-gray-400 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-500">Date limite</p>
-                        <p className="font-medium">{featuredConcours[currentConcoursIndex].deadline}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center">
-                      <Users className="h-5 w-5 text-gray-400 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-500">Candidats inscrits</p>
-                        <p className="font-medium">{featuredConcours[currentConcoursIndex].candidates.toLocaleString()}+</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-4">
-                    <Link
-                      href={`/concours/${featuredConcours[currentConcoursIndex].id}`}
-                      className="w-full block text-center bg-linear-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 items-center justify-center group"
-                    >
-                      Voir les détails
-                      <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </div>
+                <div className="pt-4">
+                  <Button
+                    href={`/concours/${concoursData[currentConcoursIndex].id}`}
+                    variant="primary"
+                    gradient
+                    fullWidth
+                    icon={ChevronRight}
+                    iconPosition="right"
+                  >
+                    Voir les détails
+                  </Button>
                 </div>
               </div>
-            </div>
+            </Card>
             
             {/* Cartes flottantes */}
-            <div className="absolute -bottom-6 -left-6 w-64 bg-white rounded-xl shadow-lg border border-gray-200 p-4 transform -rotate-3">
+            <Card
+              variant="elevated"
+              padding="sm"
+              className="absolute -bottom-6 -left-6 w-64 transform -rotate-3 border border-gray-200"
+            >
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
                   <BookOpen className="h-5 w-5 text-blue-600" />
@@ -222,9 +282,13 @@ export default function HeroSection() {
                   <p className="text-xs text-gray-500">500+ questions disponibles</p>
                 </div>
               </div>
-            </div>
+            </Card>
             
-            <div className="absolute -top-6 -right-6 w-64 bg-white rounded-xl shadow-lg border border-gray-200 p-4 transform rotate-3">
+            <Card
+              variant="elevated"
+              padding="sm"
+              className="absolute -top-6 -right-6 w-64 transform rotate-3 border border-gray-200"
+            >
               <div className="flex items-center">
                 <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
                   <CheckCircle className="h-5 w-5 text-green-600" />
@@ -234,7 +298,7 @@ export default function HeroSection() {
                   <p className="text-xs text-gray-500">Basé sur les avis des utilisateurs</p>
                 </div>
               </div>
-            </div>
+            </Card>
           </div>
         </div>
         
@@ -251,36 +315,24 @@ export default function HeroSection() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
-              <div
+              <FeatureCard
                 key={index}
-                className="bg-white rounded-xl p-6 border border-gray-200 hover:border-orange-300 hover:shadow-lg transition-all duration-300 group"
-              >
-                <div className="w-12 h-12 bg-linear-to-r from-orange-100 to-red-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <div className="text-orange-600">
-                    {feature.icon}
-                  </div>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  {feature.description}
-                </p>
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <span className="inline-flex items-center text-sm text-orange-600 font-medium">
-                    En savoir plus
-                    <ChevronRight className="ml-1 h-4 w-4" />
-                  </span>
-                </div>
-              </div>
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+              />
             ))}
           </div>
         </div>
         
         {/* Bandeau de confiance */}
-        <div className="mt-16 bg-linear-to-r from-gray-900 to-gray-800 rounded-2xl p-6 text-white">
+        <Card
+          variant="gradient"
+          padding="lg"
+          className="mt-16 bg-linear-to-r from-gray-900 to-gray-800 rounded-2xl p-6 text-white"
+        >
           <div className="flex flex-col md:flex-row items-center justify-between">
-            <div className="mb-6 md:mb-0">
+            <div className="mb-6 md:mb-0 text-white">
               <h3 className="text-xl font-bold mb-2">
                 Confiance et fiabilité
               </h3>
@@ -294,10 +346,44 @@ export default function HeroSection() {
                   <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mx-auto mb-2">
                     <span className="font-bold text-white">{ministry.charAt(0)}</span>
                   </div>
-                  <span className="text-sm font-medium">{ministry}</span>
+                  <span className="text-sm font-medium text-white">{ministry}</span>
                 </div>
               ))}
             </div>
+          </div>
+        </Card>
+      </div>
+
+
+    </section>
+  );
+}
+
+// Version simplifiée pour utilisation dans des pages Serveurs
+export function SimpleHeroSection() {
+  return (
+    <section className="relative overflow-hidden bg-linear-to-br from-orange-50 via-white to-red-50">
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center max-w-3xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            Votre succès commence ici
+          </h1>
+          <p className="text-lg text-gray-600 mb-8">
+            Découvrez, préparez et réussissez tous les concours en Côte d'Ivoire
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="/concours"
+              className="bg-orange-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-600 transition"
+            >
+              Explorer les concours
+            </a>
+            <a
+              href="/quiz"
+              className="bg-white text-orange-500 border border-orange-500 px-6 py-3 rounded-lg font-medium hover:bg-orange-50 transition"
+            >
+              Commencer un quiz
+            </a>
           </div>
         </div>
       </div>

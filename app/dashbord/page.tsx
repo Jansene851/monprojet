@@ -58,6 +58,7 @@ interface DashboardStats {
     resources: number;
     streak: number;
     studyHours: number;
+    user: User | null;
 }
 
 interface Concours {
@@ -121,7 +122,8 @@ export default function DashboardPage() {
         progress: 68,
         resources: 18,
         streak: 7,
-        studyHours: 45
+        studyHours: 45,
+        user: null
     };
 
     const upcomingConcours: Concours[] = [

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/types';
 import { X, Check, AlertCircle, Info, Star } from 'lucide-react';
 
 const badgeVariants = cva(
@@ -55,7 +55,7 @@ const iconVariants = {
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {
+  VariantProps<typeof badgeVariants> {
   icon?: React.ReactNode;
   removable?: boolean;
   onRemove?: () => void;
@@ -82,7 +82,7 @@ export function Badge({
 }: BadgeProps) {
   const hasCount = count !== undefined;
   const displayCount = hasCount && count > maxCount ? `${maxCount}+` : count?.toString();
-  
+
   const iconToShow = icon || (variant && iconVariants[variant as keyof typeof iconVariants]);
 
   return (
@@ -97,7 +97,7 @@ export function Badge({
       {...props}
     >
       {iconToShow && <span className="mr-1">{iconToShow}</span>}
-      
+
       {hasCount ? (
         <>
           <span className="mr-1 font-bold">{displayCount}</span>
@@ -106,7 +106,7 @@ export function Badge({
       ) : (
         <span>{children}</span>
       )}
-      
+
       {removable && (
         <button
           type="button"

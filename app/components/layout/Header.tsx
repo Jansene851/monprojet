@@ -28,23 +28,13 @@ import {
   HelpCircle,
   Phone,
   Sparkle,
-  ChevronUp,
   ChevronRight,
+  ChevronUp,
   Zap,
   Target,
-  Users,
-  TrendingUp,
   BarChart3,
-  Target as TargetIcon,
-  Clock,
-  CheckCircle,
-  TrendingDown,
-  CalendarDays,
-  Trophy,
-  Medal,
-  Crown
 } from 'lucide-react';
-import SearchModal from '@/app/components/ui/Search';
+import SearchModal from '@/app/components/layout/Search';
 import AuthModal from '@/app/components/layout/AuthModal';
 import { Button } from '@/app/components/ui/Button';
 import { Card } from '@/app/components/ui/Card';
@@ -76,52 +66,6 @@ interface NavLink {
   color: string;
 }
 
-interface DashboardStats {
-  totalEnrolled: number;
-  completedQuizzes: number;
-  averageScore: number;
-  nextDeadline: string | null;
-  upcomingConcours: number;
-  progress: number;
-  studyHours: number;
-  streak: number;
-}
-
-interface Concours {
-  id: number;
-  title: string;
-  institution: string;
-  deadline: string;
-  status: 'registered' | 'pending' | 'completed' | 'upcoming';
-  progress: number;
-  daysLeft: number;
-  category: string;
-  priority: 'high' | 'medium' | 'low';
-}
-
-interface Quiz {
-  id: number;
-  title: string;
-  category: string;
-  score: number;
-  totalQuestions: number;
-  status: 'completed' | 'in-progress' | 'not-started';
-  timeSpent: number;
-  lastAttempt: string;
-  improvement: number;
-}
-
-interface Activity {
-  id: number;
-  type: 'quiz' | 'concours' | 'resource' | 'achievement';
-  title: string;
-  description: string;
-  time: string;
-  read: boolean;
-  icon: React.ReactNode;
-  color: string;
-}
-
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -135,19 +79,6 @@ export default function Header() {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [notifications] = useState(3);
-
-  // Dashboard data
-  const [dashboardStats, setDashboardStats] = useState<DashboardStats>({
-    totalEnrolled: 0,
-    completedQuizzes: 0,
-    averageScore: 0,
-    nextDeadline: null,
-    upcomingConcours: 0,
-    progress: 0,
-    studyHours: 0,
-    streak: 0
-  });
-
   const pathname = usePathname();
   const router = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -197,92 +128,8 @@ export default function Header() {
       description: 'Dates importantes',
       color: 'from-yellow-500 to-amber-500'
     },
-  ], []);
-
-  // Mock data for dashboard
-  const upcomingConcours: Concours[] = [
-    {
-      id: 1,
-      title: 'Concours ENA 2024',
-      institution: 'École Nationale d\'Administration',
-      deadline: '15 Mai 2024',
-      status: 'registered',
-      progress: 75,
-      daysLeft: 45,
-      category: 'Administration',
-      priority: 'high'
-    },
-    {
-      id: 2,
-      title: 'Police Nationale',
-      institution: 'Ministère de la Sécurité',
-      deadline: '30 Juin 2024',
-      status: 'pending',
-      progress: 30,
-      daysLeft: 90,
-      category: 'Sécurité',
-      priority: 'medium'
-    }
-  ];
-
-  const recentQuizzes: Quiz[] = [
-    {
-      id: 1,
-      title: 'Culture Générale - Session 1',
-      category: 'Culture Générale',
-      score: 85,
-      totalQuestions: 20,
-      status: 'completed',
-      timeSpent: 45,
-      lastAttempt: 'Il y a 2 jours',
-      improvement: 12
-    },
-    {
-      id: 2,
-      title: 'Mathématiques - Algèbre',
-      category: 'Mathématiques',
-      score: 72,
-      totalQuestions: 15,
-      status: 'completed',
-      timeSpent: 30,
-      lastAttempt: 'Il y a 5 jours',
-      improvement: 5
-    }
-  ];
-
-  const activities: Activity[] = [
-    {
-      id: 1,
-      type: 'quiz',
-      title: 'Quiz terminé avec succès',
-      description: 'Vous avez obtenu 85% au quiz "Culture Générale"',
-      time: 'Il y a 2 heures',
-      read: false,
-      icon: <Target className="h-4 w-4" />,
-      color: 'bg-blue-100 text-blue-600'
-    },
-    {
-      id: 2,
-      type: 'concours',
-      title: 'Date limite approche',
-      description: 'Concours ENA : Plus que 45 jours pour finaliser',
-      time: 'Il y a 1 jour',
-      read: false,
-      icon: <CheckCircle className="h-4 w-4" />,
-      color: 'bg-orange-100 text-orange-600'
-    }
-  ];
-
-  // Graph data
-  const weeklyProgress = [
-    { day: 'Lun', value: 60 },
-    { day: 'Mar', value: 75 },
-    { day: 'Mer', value: 85 },
-    { day: 'Jeu', value: 70 },
-    { day: 'Ven', value: 90 },
-    { day: 'Sam', value: 65 },
-    { day: 'Dim', value: 80 }
-  ];
+  ],
+   []);
 
   // Gestion du scroll
   useEffect(() => {
@@ -358,27 +205,12 @@ export default function Header() {
       try {
         const parsedUser = JSON.parse(savedUser);
         setUser(parsedUser);
-
-        // Charger les stats du dashboard
-        const stats: DashboardStats = {
-          totalEnrolled: parsedUser.enrolled || 3,
-          completedQuizzes: 12,
-          averageScore: 78,
-          nextDeadline: '15 Mars 2024',
-          upcomingConcours: 2,
-          progress: 68,
-          studyHours: 45,
-          streak: 7
-        };
-        setDashboardStats(stats);
       } catch (error) {
         console.error('Error parsing user data:', error);
         localStorage.removeItem('user');
       }
     }
   }, []);
-
-  // Toggle dark mode
 
   // Gestion de la recherche
   const handleSearch = useCallback((query: string, filter: string = 'all') => {
@@ -410,19 +242,6 @@ export default function Header() {
         nextLevelPoints: 600
       };
       setUser(demoUserData);
-
-      const stats: DashboardStats = {
-        totalEnrolled: demoUserData.enrolled,
-        completedQuizzes: 12,
-        averageScore: 78,
-        nextDeadline: '15 Mars 2024',
-        upcomingConcours: 2,
-        progress: 68,
-        studyHours: 45,
-        streak: 7
-      };
-      setDashboardStats(stats);
-
       localStorage.setItem('user', JSON.stringify(demoUserData));
       setIsUserMenuOpen(false);
       setIsDashboardOpen(true);
@@ -439,16 +258,6 @@ export default function Header() {
 
   const handleLogout = useCallback(() => {
     setUser(null);
-    setDashboardStats({
-      totalEnrolled: 0,
-      completedQuizzes: 0,
-      averageScore: 0,
-      nextDeadline: null,
-      upcomingConcours: 0,
-      progress: 0,
-      studyHours: 0,
-      streak: 0
-    });
     localStorage.removeItem('user');
     setIsUserMenuOpen(false);
     setIsDashboardOpen(false);
@@ -458,14 +267,12 @@ export default function Header() {
   // Toggle dashboard
   const toggleDashboard = useCallback(() => {
     if (user) {
-      setIsDashboardOpen(!isDashboardOpen)
       router.push('/dashbord');
     } else {
       setAuthMode('login');
       setAuthModalOpen(true);
-      ;
     }
-  }, [user, isDashboardOpen]);
+  }, [user, router]);
 
   // Fonction pour scroller vers le haut
   const scrollToTop = useCallback(() => {
@@ -482,52 +289,18 @@ export default function Header() {
     setIsDashboardOpen(false);
   }, []);
 
-  // Navigation item mobile avec Button réutilisable
-  const MobileNavItem = useCallback(({ link }: { link: NavLink }) => (
-    <Button
-      href={link.href}
-      variant="ghost"
-      className={`w-full justify-start h-auto py-4 ${pathname === link.href
-        ? 'bg-linear-to-r from-orange-50 to-red-50 dark:from-gray-800 dark:to-gray-800 text-orange-600 dark:text-orange-400 font-semibold'
-        : 'text-gray-700 dark:text-gray-300'
-        }`}
-      onClick={closeAllMenus}
-    >
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center space-x-3">
-          <div className={`w-10 h-10 rounded-xl bg-linear-to-r ${link.color} flex items-center justify-center`}>
-            {link.icon}
-          </div>
-          <div className="text-left">
-            <div className="font-medium">{link.name}</div>
-            <div className="text-xs opacity-75">{link.description}</div>
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          {link.badge && (
-            <span className="px-2 py-1 text-xs bg-linear-to-r from-orange-500 to-red-500 text-white rounded-full">
-              {link.badge}
-            </span>
-          )}
-          <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-        </div>
-      </div>
-    </Button>
-  ), [pathname, closeAllMenus]);
-
-
   return (
     <>
       <header
         ref={headerRef}
         className={`
-          fixed top-0 left-0 right-0 z-50
+          fixed top-0 left-0 right-0 z-50 h-16
           transition-all duration-300 ease-out
           ${isScrolled
-            ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50 py-2'
-            : 'bg-white dark:bg-gray-900 py-3'
+            ? 'bg-white/95 backdrop-blur-xl shadow-lg shadow-gray-200/50 py-2'
+            : 'bg-white py-3'
           }
-          ${isTop ? 'border-b border-gray-200 dark:border-gray-800' : ''}
+          ${isTop ? 'border-b border-gray-200' : ''}
         `}
       >
         {/* Progress bar */}
@@ -538,7 +311,7 @@ export default function Header() {
 
         {/* Top banner - visible seulement au top */}
         {isTop && (
-          <div className="animate-slide-down">
+          <div className="absolute bottom-full left-0 right-0 animate-slide-down">
             <div className="bg-linear-to-r from-orange-500 via-red-500 to-pink-500 text-white">
               <div className="container mx-auto px-4 py-1.5">
                 <div className="flex items-center justify-between text-sm">
@@ -561,13 +334,13 @@ export default function Header() {
         )}
 
         {/* Main header */}
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between">
+        <div className="container mx-auto px-4 h-full">
+          <div className="flex items-center justify-between h-full">
             {/* Logo */}
             <Button
               href="/"
               variant="ghost"
-              className="flex items-center space-x-3 group p-0"
+              className="flex items-center space-x-3 group p-0 h-full"
               onClick={closeAllMenus}
             >
               <div className="relative">
@@ -580,12 +353,12 @@ export default function Header() {
                 </div>
               </div>
               <div className={`${isScrolled ? 'hidden md:block' : 'hidden sm:block'}`}>
-                <h1 className={`font-bold text-gray-900 dark:text-white tracking-tight transition-all duration-300 ${isScrolled ? 'text-xl' : 'text-2xl'
+                <h1 className={`font-bold text-gray-900 tracking-tight transition-all duration-300 ${isScrolled ? 'text-xl' : 'text-2xl'
                   }`}>
-                  Concours<span className="text-orange-600 dark:text-orange-400">.ci</span>
+                  Concours<span className="text-orange-600">.ci</span>
                 </h1>
                 {!isScrolled && (
-                  <p className="text-xs text-gray-600 dark:text-gray-400 font-medium">
+                  <p className="text-xs text-gray-600 font-medium">
                     Votre succès commence ici
                   </p>
                 )}
@@ -593,13 +366,13 @@ export default function Header() {
             </Button>
 
             {/* Desktop Navigation - se cache sur mobile */}
-            <nav className="hidden lg:flex items-center space-x-1" aria-label="Navigation principale">
+            <nav className="hidden lg:flex items-center space-x-1 h-full" aria-label="Navigation principale">
               {navLinks.map((link) => (
                 <Button
                   key={link.name}
                   href={link.href}
                   variant={pathname === link.href ? 'primary' : 'ghost'}
-                  className={`px-4 py-2.5 ${pathname === link.href ? 'linear shadow-sm' : ''}`}
+                  className={`px-4 py-2.5 h-full ${pathname === link.href ? 'linear shadow-sm' : ''}`}
                   title={link.description}
                   size="sm"
                 >
@@ -675,12 +448,12 @@ export default function Header() {
                     )}
                   </div>
                   <div className="hidden lg:block text-left min-w-0">
-                    <p className={`font-medium text-gray-900 dark:text-white truncate transition-all duration-200 ${isScrolled ? 'text-sm' : ''
+                    <p className={`font-medium text-gray-900 truncate transition-all duration-200 ${isScrolled ? 'text-sm' : ''
                       }`}>
                       {user ? user.name : 'Bienvenue'}
                     </p>
                     {!isScrolled && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      <p className="text-xs text-gray-500 truncate">
                         {user ? user.email : 'Connectez-vous'}
                       </p>
                     )}
@@ -700,7 +473,7 @@ export default function Header() {
                       {user ? (
                         <>
                           {/* User info */}
-                          <div className="p-6 bg-linear-to-br from-orange-50 via-red-50 to-pink-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800">
+                          <div className="p-6 bg-linear-to-br from-orange-50 via-red-50 to-pink-50">
                             <div className="flex items-center space-x-3">
                               <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-md ${user.avatarColor}`}>
                                 <span className="font-bold text-lg">
@@ -709,7 +482,7 @@ export default function Header() {
                               </div>
                               <div>
                                 <div className="flex items-center space-x-2">
-                                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                                  <h3 className="font-semibold text-gray-900">
                                     {user.name}
                                   </h3>
                                   {user.role === 'premium' && (
@@ -719,7 +492,7 @@ export default function Header() {
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                <p className="text-sm text-gray-600 mt-1">
                                   {user.email}
                                 </p>
                               </div>
@@ -727,7 +500,7 @@ export default function Header() {
                           </div>
 
                           {/* Stats avec Card.Stats */}
-                          <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800">
+                          <div className="px-6 py-4 border-t border-gray-100">
                             <div className="grid grid-cols-3 gap-4">
                               <Card.Stats
                                 icon={<UserCheck className="h-4 w-4" />}
@@ -778,8 +551,8 @@ export default function Header() {
                                 ]
                               }
                             ].map((section, index) => (
-                              <div key={section.section} className={`${index > 0 ? 'border-t border-gray-100 dark:border-gray-800' : ''}`}>
-                                <div className="px-4 py-2.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                              <div key={section.section} className={`${index > 0 ? 'border-t border-gray-100' : ''}`}>
+                                <div className="px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                   {section.section}
                                 </div>
                                 {section.items.map((item) => (
@@ -797,13 +570,13 @@ export default function Header() {
                                   >
                                     <div className="flex items-center justify-between w-full">
                                       <div className="flex items-center space-x-3">
-                                        <div className="text-gray-400 dark:text-gray-500">
+                                        <div className="text-gray-400">
                                           <item.icon className="h-4 w-4" />
                                         </div>
                                         <span className="font-medium">{item.label}</span>
                                       </div>
                                       {item.badge && (
-                                        <span className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+                                        <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full">
                                           {item.badge}
                                         </span>
                                       )}
@@ -816,7 +589,7 @@ export default function Header() {
                           </div>
 
                           {/* Logout Button */}
-                          <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
+                          <div className="p-4 border-t border-gray-200 bg-gray-50/50">
                             <Button
                               onClick={handleLogout}
                               variant="primary"
@@ -832,14 +605,14 @@ export default function Header() {
                       ) : (
                         <>
                           {/* Guest info */}
-                          <div className="p-6 bg-linear-to-br from-orange-50 via-red-50 to-pink-50 dark:from-gray-800 dark:via-gray-800 dark:to-gray-800">
+                          <div className="p-6 bg-linear-to-br from-orange-50 via-red-50 to-pink-50">
                             <div className="flex items-center space-x-3">
                               <div className="w-12 h-12 rounded-xl bg-linear-to-r from-orange-500 to-red-600 flex items-center justify-center">
                                 <User className="h-6 w-6 text-white" />
                               </div>
                               <div>
-                                <h3 className="font-semibold text-gray-900 dark:text-white">Invité</h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                <h3 className="font-semibold text-gray-900">Invité</h3>
+                                <p className="text-sm text-gray-600 mt-1">
                                   Connectez-vous pour profiter de toutes les fonctionnalités
                                 </p>
                               </div>
@@ -898,51 +671,17 @@ export default function Header() {
 
         {/* Mobile Navigation Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden fixed inset-0 top-0 z-40 bg-white dark:bg-gray-900 animate-slide-down overflow-y-auto">
-            <div className="min-h-screen">
-              {/* Mobile Header */}
-              <Card
-                variant="elevated"
-                className="sticky top-0 border-b border-gray-200 dark:border-gray-800 rounded-none"
-                padding="lg"
-              >
-                <div className="flex items-center justify-between">
-                  <Button
-                    href="/"
-                    variant="ghost"
-                    className="flex items-center space-x-3 p-0"
-                    onClick={closeAllMenus}
-                  >
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-linear-to-r from-orange-500 to-red-600 rounded-xl blur opacity-70" />
-                      <div className="relative bg-linear-to-r from-orange-500 to-red-600 p-2 rounded-xl shadow-md">
-                        <GraduationCap className="h-6 w-6 text-white" />
-                      </div>
-                    </div>
-                    <div>
-                      <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                        Concours<span className="text-orange-600 dark:text-orange-400">.ci</span>
-                      </h1>
-                    </div>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    icon={X}
-                    iconOnly
-                    onClick={closeAllMenus}
-                  />
-                </div>
-              </Card>
-
+          <div className="lg:hidden fixed inset-0 top-16 z-40 bg-white animate-slide-down overflow-y-auto">
+            <div className="min-h-screen pb-16">
               {/* Search Bar Mobile */}
-              <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+              <div className="p-4 border-b border-gray-200">
                 <Button
                   onClick={() => {
                     closeAllMenus();
                     setSearchModalOpen(true);
                   }}
                   variant="ghost"
-                  className="w-full justify-start h-auto py-4 bg-gray-50 dark:bg-gray-800"
+                  className="w-full justify-start h-auto py-4 bg-gray-50"
                 >
                   <div className="flex items-center justify-between w-full">
                     <div className="flex items-center space-x-3">
@@ -950,13 +689,13 @@ export default function Header() {
                         <Search className="h-5 w-5 text-white" />
                       </div>
                       <div className="text-left">
-                        <div className="font-medium text-gray-900 dark:text-white">Rechercher</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                        <div className="font-medium text-gray-900">Rechercher</div>
+                        <div className="text-sm text-gray-600">
                           Concours, quiz, actualités...
                         </div>
                       </div>
                     </div>
-                    <kbd className="px-2 py-1 text-xs font-mono text-gray-500 bg-gray-100 dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600">
+                    <kbd className="px-2 py-1 text-xs font-mono text-gray-500 bg-gray-100 rounded border border-gray-300">
                       ⌘K
                     </kbd>
                   </div>
@@ -966,13 +705,42 @@ export default function Header() {
               {/* Navigation Mobile */}
               <div className="p-4 space-y-2">
                 {navLinks.map((link) => (
-                  <MobileNavItem key={link.name} link={link} />
+                  <Button
+                    key={link.name}
+                    href={link.href}
+                    variant="ghost"
+                    className={`w-full justify-start h-auto py-4 ${pathname === link.href
+                      ? 'bg-linear-to-r from-orange-50 to-red-50 text-orange-600 font-semibold'
+                      : 'text-gray-700'
+                      }`}
+                    onClick={closeAllMenus}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-10 h-10 rounded-xl bg-linear-to-r ${link.color} flex items-center justify-center`}>
+                          {link.icon}
+                        </div>
+                        <div className="text-left">
+                          <div className="font-medium">{link.name}</div>
+                          <div className="text-xs opacity-75">{link.description}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {link.badge && (
+                          <span className="px-2 py-1 text-xs bg-linear-to-r from-orange-500 to-red-500 text-white rounded-full">
+                            {link.badge}
+                          </span>
+                        )}
+                        <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </div>
+                  </Button>
                 ))}
               </div>
 
               {/* Quick Actions avec Card */}
               <div className="p-4">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Actions rapides</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">Actions rapides</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <Card
                     variant="elevated"
@@ -987,8 +755,8 @@ export default function Header() {
                     <div className="flex items-center space-x-3">
                       <BarChart3 className="h-5 w-5 text-indigo-600" />
                       <div className="text-left">
-                        <div className="font-medium text-gray-900 dark:text-white">Dashboard</div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">
+                        <div className="font-medium text-gray-900">Dashboard</div>
+                        <div className="text-xs text-gray-600">
                           {user ? 'Voir vos stats' : 'Connectez-vous'}
                         </div>
                       </div>
@@ -1008,18 +776,16 @@ export default function Header() {
                     <div className="flex items-center space-x-3">
                       <Bell className="h-5 w-5 text-orange-600" />
                       <div className="text-left">
-                        <div className="font-medium text-gray-900 dark:text-white">Notifications</div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">{notifications} nouvelles</div>
+                        <div className="font-medium text-gray-900">Notifications</div>
+                        <div className="text-xs text-gray-600">{notifications} nouvelles</div>
                       </div>
                     </div>
                   </Card>
-
-
                 </div>
               </div>
 
               {/* User Section Mobile */}
-              <div className="p-4 border-t border-gray-200 dark:border-gray-800 mt-4">
+              <div className="p-4 border-t border-gray-200 mt-4">
                 {user ? (
                   <>
                     <Card
@@ -1034,8 +800,8 @@ export default function Header() {
                           </span>
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900 dark:text-white">{user.name}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{user.email}</p>
+                          <p className="font-semibold text-gray-900">{user.name}</p>
+                          <p className="text-sm text-gray-600">{user.email}</p>
                         </div>
                       </div>
                     </Card>
@@ -1059,8 +825,8 @@ export default function Header() {
                       <div className="w-16 h-16 bg-linear-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-3">
                         <User className="h-8 w-8 text-white" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white">Connectez-vous</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <h3 className="font-semibold text-gray-900">Connectez-vous</h3>
+                      <p className="text-sm text-gray-600 mt-1">
                         Pour sauvegarder vos préférences
                       </p>
                     </Card>
@@ -1087,7 +853,7 @@ export default function Header() {
                         <Button
                           onClick={handleSignup}
                           variant="outline"
-                          className="border-gray-300 dark:border-gray-700"
+                          className="border-gray-300"
                         >
                           Inscription
                         </Button>
@@ -1100,12 +866,6 @@ export default function Header() {
           </div>
         )}
       </header>
-
-
-      {/* Bouton retour en haut */}
-      {showScrollTop && ('')
-        
-      }
 
       {/* Search Modal */}
       <SearchModal
@@ -1121,9 +881,6 @@ export default function Header() {
         mode={authMode}
         onSwitchMode={(mode: 'login' | 'signup') => setAuthMode(mode)}
       />
-
-      {/* Espace pour le header fixe */}
-      <div className="h-16 lg:h-20" />
     </>
   );
 }

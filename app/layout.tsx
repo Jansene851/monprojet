@@ -29,11 +29,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-gray-50">
+          {/* Header fixe avec hauteur connue (h-16) */}
           <Header />
-          <main >
+          
+          {/* Contenu principal avec padding-top pour compenser le header fixe */}
+          <main className="pt-16">
             {children}
           </main>
+          
           <Footer />
         </div>
       </body>
